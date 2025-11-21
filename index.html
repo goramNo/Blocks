@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>BLOCKS by Dracks</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- ÉCRAN ACCUEIL -->
+  <div id="screen-home">
+    <h1 id="logo">BLOCKS BY Dracks</h1>
+
+    <!-- Pseudo -->
+    <div id="pseudo-wrapper">
+      <label for="player-name">Ton pseudo</label>
+      <div class="pseudo-input-row">
+        <input
+          id="player-name"
+          type="text"
+          maxlength="16"
+          placeholder="Ex : Dracks"
+        />
+        <button id="btn-validate-name">OK</button>
+      </div>
+      <div id="pseudo-status"></div>
+    </div>
+
+    <!-- Centre : Play + copier lien -->
+    <div id="home-center">
+      <button id="btn-play" class="btn-play">
+        PLAY
+      </button>
+
+      <button
+        id="btn-copy-link"
+        class="btn-copy "
+        title="Copier le lien de la partie"
+      ></button>
+      <span id="copy-label">Copier le lien de la partie</span>
+    </div>
+
+    <!-- Choix nombre de joueurs -->
+    <div id="players-select">
+      <button class="player-btn" data-players="1">1 Joueur</button>
+      <button class="player-btn" data-players="2">2 Joueurs</button>
+      <button class="player-btn" data-players="3">3 Joueurs</button>
+    </div>
+  </div>
+
+  <!-- ÉCRAN JEU -->
+  <div id="screen-game" class="hidden">
+    <div id="game-topbar">
+      <button id="btn-back">← Retour</button>
+      <span id="game-info"></span>
+    </div>
+
+    <div id="game-main">
+      <h2 id="game-title">BLOCKS BY SKCARD</h2>
+
+      <!-- zone centrale : la grille / plateau -->
+      <div id="grid-wrapper">
+        <canvas id="board"></canvas>
+      </div>
+
+      <!-- cartes joueurs + compteur -->
+      <div id="game-panels">
+        <!-- Adversaire 1 -->
+        <div class="player-card opponent-card" id="opponent-1">
+          <div class="player-card-title" id="opp1-name">Adversaire 1</div>
+          <div class="player-card-body" id="opp1-guess">?</div>
+        </div>
+
+        <!-- Joueur local -->
+        <div class="player-card answer-card">
+          <div class="player-card-title">Combien de Blocks</div>
+          <div class="player-card-body">
+            <button id="counter-btn" class="counter-btn">0</button>
+            <button id="btn-submit-answer">Valider</button>
+            <div id="answer-feedback"></div>
+          </div>
+        </div>
+
+        <!-- Adversaire 2 -->
+        <div class="player-card opponent-card" id="opponent-2">
+          <div class="player-card-title" id="opp2-name">Adversaire 2</div>
+          <div class="player-card-body" id="opp2-guess">?</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Socket.IO client (serveur Node) -->
+  <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+  <!-- Ton script principal -->
+  <script src="main.js"></script>
+</body>
+</html>

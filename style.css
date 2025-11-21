@@ -1,0 +1,545 @@
+/* -------- RESET DE BASE -------- */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-main: #f5f7ff;
+  --bg-alt: #ffffff;
+  --accent: #2563eb;
+  --accent-soft: #93c5fd;
+  --accent-2: #a855f7;
+  --text-main: #0f172a;
+  --text-soft: #6b7280;
+  --border-soft: #e5e7eb;
+}
+
+/* -------- BODY + BACKGROUND -------- */
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at 0% 0%, #e0f2fe 0, transparent 55%),
+    radial-gradient(circle at 100% 100%, #ede9fe 0, transparent 55%),
+    var(--bg-main);
+  color: var(--text-main);
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(
+      120deg,
+      rgba(148, 163, 184, 0.15) 1px,
+      transparent 1px
+    );
+  background-size: 22px 22px;
+  opacity: 0.4;
+}
+
+/* -------- ÉCRAN ACCUEIL -------- */
+
+#screen-home {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 40px;
+  position: relative;
+}
+
+/* -------- LOGO -------- */
+
+#logo {
+  font-size: 28px;
+  letter-spacing: 8px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--accent);
+  text-shadow: 0 0 12px rgba(37, 99, 235, 0.35);
+  margin-bottom: 20px;
+}
+
+/* -------- PSEUDO ZONE (esthétique) -------- */
+
+#pseudo-wrapper {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Label "Ton pseudo" */
+
+#pseudo-wrapper label {
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  width: 100%;
+  color: #333;
+  margin-bottom: 10px;
+  margin-top: 6px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  position: relative;
+}
+
+/* Trait futuriste */
+
+#pseudo-wrapper label::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -12px;
+  width: 80px;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+}
+
+/* Ligne : input + OK */
+
+.pseudo-input-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow:
+    0 12px 30px rgba(148, 163, 184, 0.35),
+    0 0 0 1px rgba(226, 232, 240, 0.9);
+}
+
+/* Champ input pseudo */
+
+#player-name {
+  width: 260px;
+  padding: 12px 18px;
+  font-size: 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.9);
+  background: #f9fafb;
+  text-align: center;
+  color: var(--text-main);
+  transition: 0.15s ease;
+}
+
+#player-name:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.35);
+  background: #ffffff;
+}
+
+/* Bouton OK */
+
+#btn-validate-name {
+  padding: 9px 22px;
+  font-size: 15px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+  transition: 0.15s ease;
+}
+
+#btn-validate-name:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(79, 70, 229, 0.55);
+}
+
+/* Texte statut pseudo */
+
+#pseudo-status {
+  font-size: 14px;
+  text-align: center;
+  min-height: 20px;
+  margin-top: 6px;
+  color: var(--text-soft);
+}
+
+/* -------- PLAY CARD -------- */
+
+#home-center {
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.btn-play {
+  width: 280px;
+  height: 150px;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  background: linear-gradient(145deg, #ffffff, #e5edff);
+  font-size: 26px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-main);
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  box-shadow:
+    0 18px 40px rgba(15, 23, 42, 0.12),
+    0 0 0 1px rgba(255, 255, 255, 0.8);
+  transition: 0.18s ease;
+}
+
+.btn-play:hover {
+  transform: translateY(-4px) scale(1.01);
+  border-color: var(--accent);
+  box-shadow: 0 20px 50px rgba(37, 99, 235, 0.25);
+  background: linear-gradient(145deg, #e0ecff, #ffffff);
+}
+
+/* Bouton copier lien */
+
+.btn-copy {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.12);
+  transition: 0.18s ease;
+}
+
+.btn-copy:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent-2);
+}
+
+#copy-label {
+  font-size: 15px;
+  color: var(--text-soft);
+}
+
+/* -------- PLAYER SELECT -------- */
+
+#players-select {
+  position: absolute;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: center;
+  gap: 80px;
+  font-size: 18px;
+}
+
+.player-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-soft);
+  padding: 0 22px;
+  font-size: 18px;
+  position: relative;
+  transition: 0.18s ease;
+}
+
+.player-btn:hover {
+  color: var(--text-main);
+  transform: translateY(-1px);
+}
+
+.player-btn.active {
+  color: var(--accent);
+}
+
+.player-btn::after {
+  content: "";
+  position: absolute;
+  left: 50%;                    /* centre horizontalement */
+  transform: translateX(-50%);  /* centre par rapport au texte */
+  bottom: -2px;                 /* léger offset sous le texte */
+  height: 2px;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transition: width 0.18s ease;
+}
+
+.player-btn.active::after {
+  width: 70%;                   /* longueur du soulignage (ajuste si tu veux) */
+}
+
+
+/* -------- ÉCRAN JEU -------- */
+
+.hidden {
+  display: none !important;
+}
+
+#screen-game {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(circle at 20% 0%, #e0f2fe 0, transparent 55%),
+    radial-gradient(circle at 80% 100%, #ede9fe 0, transparent 55%),
+    #f9fafb;
+  color: var(--text-main);
+}
+
+#game-topbar {
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid var(--border-soft);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+}
+
+#btn-back {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.7);
+  background: #ffffff;
+  cursor: pointer;
+  color: var(--text-main);
+  font-size: 14px;
+}
+
+#btn-back:hover {
+  background: linear-gradient(90deg, #eff6ff, #f5f3ff);
+  border-color: var(--accent-soft);
+}
+
+#game-info {
+  font-size: 14px;
+  color: var(--text-soft);
+}
+
+#game-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 40px 32px;
+  gap: 32px;
+}
+
+#game-title {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+/* Grille */
+
+#grid-wrapper {
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 18px;
+  max-width: 620px;
+  width: 80%;
+  max-height: 360px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 22px 40px rgba(15, 23, 42, 0.15),
+    0 0 0 1px rgba(226, 232, 240, 0.9);
+}
+
+#board {
+  width: 100%;
+  height: 100%;
+}
+
+/* Cartes bas */
+
+#game-panels {
+  width: 100%;
+  max-width: 900px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.player-card {
+  border-radius: 20px;
+  padding: 18px 20px;
+  background: rgba(255, 255, 255, 0.96);
+  min-height: 120px;
+  box-shadow:
+    0 16px 30px rgba(148, 163, 184, 0.25),
+    0 0 0 1px rgba(226, 232, 240, 0.9);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.player-card-title {
+  font-size: 17px;
+  margin-bottom: 14px;
+  color: var(--text-soft);
+}
+
+/* Adversaires */
+
+/* Cartes adversaires plus petites et dans le style de la carte centrale */
+
+.opponent-card {
+  min-height: 140px;
+  padding: 14px 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow:
+    0 12px 24px rgba(248, 113, 113, 0.20),
+    0 0 0 1px rgba(254, 226, 226, 0.9);
+  border: 1px solid rgba(248, 113, 113, 0.7);
+}
+
+/* Titre "Humility", "En attente..." etc. */
+.opponent-card .player-card-title {
+  font-size: 15px;
+  color: var(--text-soft);
+  margin-bottom: 10px;
+}
+
+/* Zone du nombre dans la carte adversaire : même mood que le compteur */
+.opponent-card .player-card-body {
+  border-radius: 18px;
+  border: 2px solid rgba(248, 113, 113, 0.35);
+  background: #ffffff;
+  min-height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+/* Flou des nombres adversaires avant révélation */
+.blurred {
+  filter: blur(7px);
+  user-select: none;
+}
+
+/* Petite anim quand on dévoile */
+.revealed {
+  animation: revealGuess 0.25s ease-out;
+}
+
+@keyframes revealGuess {
+  from {
+    filter: blur(8px);
+    opacity: 0.3;
+  }
+  to {
+    filter: blur(0);
+    opacity: 1;
+  }
+}
+
+.blurred {
+  filter: blur(6px);
+  user-select: none;
+}
+
+.revealed {
+  animation: revealGuess 0.25s ease-out;
+}
+
+@keyframes revealGuess {
+  from {
+    filter: blur(8px);
+    opacity: 0.4;
+  }
+  to {
+    filter: blur(0);
+    opacity: 1;
+  }
+}
+
+/* Carte milieu (réponse) */
+
+.answer-card {
+  border-color: rgba(59, 130, 246, 0.9);
+  box-shadow:
+    0 16px 32px rgba(59, 130, 246, 0.2),
+    0 0 0 1px rgba(191, 219, 254, 0.9);
+}
+
+.answer-card .player-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Compteur */
+
+.counter-btn {
+  min-width: 250px;
+  min-height: 200px;
+  border-radius: 20px;
+  border: 2px solid rgba(148, 163, 184, 0.9);
+  background: #ffffff;
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--text-main);
+  cursor: pointer;
+  box-shadow:
+    0 20px 40px rgba(148, 163, 184, 0.25),
+    0 0 0 2px rgba(226, 232, 240, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.12s ease;
+}
+
+.counter-btn:hover {
+  transform: translateY(-3px);
+  background: #f0f6ff;
+  border-color: var(--accent);
+}
+
+/* Bouton Valider */
+
+#btn-submit-answer {
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.15s ease;
+}
+
+#btn-submit-answer:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(129, 140, 248, 0.6);
+}
+
+#answer-feedback {
+  font-size: 14px;
+  min-height: 18px;
+  color: var(--text-soft);
+}
