@@ -91,24 +91,84 @@
       <div id="pseudo-status"></div>
     </div>
     <!-- Centre : Play + copier lien -->
-    <div id="home-center">
-      <button id="btn-play" class="btn-play">
+    <div id="home-center" style="display: flex; flex-direction: column; align-items: center; gap: 16px; margin: 32px 0;">
+      <button id="btn-play" class="btn-play" style="
+        padding: 16px 48px;
+        font-size: 24px;
+        font-weight: 900;
+        color: #0f172a;
+        background: white;
+        border: none;
+        border-radius: 16px;
+        cursor: pointer;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        transition: all 0.2s ease;
+      ">
         PLAY
       </button>
+      
       <button
         id="btn-copy-link"
         class="btn-copy hidden"
         title="Copier le lien de la partie"
+        style="
+          padding: 12px 24px;
+          font-size: 14px;
+          font-weight: 600;
+          color: #64748b;
+          background: white;
+          border: 2px solid #e2e8f0;
+          border-radius: 12px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        "
       >
         📋 Copier le lien
       </button>
-      <span id="copy-label">Copier le lien de la partie</span>
     </div>
     <!-- Choix nombre de joueurs -->
     <div id="players-select">
       <button class="player-btn" data-players="1">1 Joueur</button>
       <button class="player-btn" data-players="2">2 Joueurs</button>
       <button class="player-btn" data-players="3">3 Joueurs</button>
+    </div>
+
+    <!-- ✨ NOUVEAU: Choix du nombre de rounds -->
+    <div id="rounds-select" style="margin-top: 20px;">
+      <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #0f172a;">Nombre de rounds :</label>
+      <div style="display: flex; gap: 12px; justify-content: center;">
+        <button class="round-btn" data-rounds="3" style="
+          padding: 8px 20px;
+          border-radius: 12px;
+          border: 2px solid #e2e8f0;
+          background: white;
+          cursor: pointer;
+          font-weight: 600;
+          transition: all 0.2s ease;
+        ">3 rounds</button>
+        <button class="round-btn active" data-rounds="5" style="
+          padding: 8px 20px;
+          border-radius: 12px;
+          border: 2px solid #3b82f6;
+          background: #3b82f6;
+          color: white;
+          cursor: pointer;
+          font-weight: 600;
+          transition: all 0.2s ease;
+        ">5 rounds</button>
+        <button class="round-btn" data-rounds="10" style="
+          padding: 8px 20px;
+          border-radius: 12px;
+          border: 2px solid #e2e8f0;
+          background: white;
+          cursor: pointer;
+          font-weight: 600;
+          transition: all 0.2s ease;
+        ">10 rounds</button>
+      </div>
     </div>
   </div>
 

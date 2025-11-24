@@ -51,8 +51,9 @@ let round = 0;
 
 let currentActiveBlocks = [];
 
-// ✨ NOUVEAU: Nombre de joueurs sélectionné
-let selectedPlayerCount = 3; // Par défaut 3 joueurs
+// ✨ NOUVEAU: Nombre de joueurs et rounds sélectionnés
+let selectedPlayerCount = 1;
+let selectedMaxRounds = 5; // Par défaut 5 rounds
 
 // =========================
 // URL ROOM DETECTION
@@ -150,6 +151,26 @@ if (playerButtons.length) {
   selectedPlayerCount = parseInt(playerButtons[0].getAttribute("data-players")) || 1;
 }
 
+// ✨ NOUVEAU: ROUNDS SELECT
+const roundButtons = document.querySelectorAll(".round-btn");
+roundButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    roundButtons.forEach(b => {
+      b.classList.remove("active");
+      b.style.border = "2px solid #e2e8f0";
+      b.style.background = "white";
+      b.style.color = "#0f172a";
+    });
+    btn.classList.add("active");
+    btn.style.border = "2px solid #3b82f6";
+    btn.style.background = "#3b82f6";
+    btn.style.color = "white";
+    
+    selectedMaxRounds = parseInt(btn.getAttribute("data-rounds"));
+    console.log("🎯 Nombre de rounds sélectionné:", selectedMaxRounds);
+  });
+});
+
 // =========================
 // PSEUDO VALIDATION
 // =========================
@@ -195,8 +216,12 @@ btnPlay.addEventListener("click", async () => {
 
   btnPlay.disabled = true;
 
-  // ✨ Envoie le nombre de joueurs au serveur
-  socket.emit("createRoom", { name: myName, maxPlayers: selectedPlayerCount }, async ({ roomId }) => {
+  // ✨ Envoie le nombre de joueurs ET le nombre de rounds au serveur
+  socket.emit("createRoom", { 
+    name: myName, 
+    maxPlayers: selectedPlayerCount,
+    maxRounds: selectedMaxRounds 
+  }, async ({ roomId }) => {
     currentRoom = roomId;
 
     window.history.replaceState({}, "", `?room=${roomId}`);
@@ -676,21 +701,41 @@ function buildAnswerCard(me) {
   newRoundBtn.textContent = "🔄 Nouvelle manche";
   newRoundBtn.style.cssText = `
     display: none;
-    margin-top: 8px;
-    padding: 10px 24px;
+    margin-top: 12px;
+    padding: 12px 28px;
     border-radius: 999px;
     border: none;
     cursor: pointer;
     font-weight: 700;
-    font-size: 14px;
+    font-size: 15px;
     color: white;
     background: linear-gradient(90deg, #3b82f6, #2563eb);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+    transition: all 0.2s ease;
+    width: 100%;
   `;
+  
+  newRoundBtn.addEventListener("mouseenter", () => {
+    newRoundBtn.style.transform = "translateY(-2px)";
+    newRoundBtn.style.boxShadow = "0 8px 20px rgba(59, 130, 246, 0.5)";
+  });
+  
+  newRoundBtn.addEventListener("mouseleave", () => {
+    newRoundBtn.style.transform = "translateY(0)";
+    newRoundBtn.style.boxShadow = "0 6px 16px rgba(59, 130, 246, 0.4)";
+  });
 
   newRoundBtn.addEventListener("click", () => {
-    if (!currentRoom) return;
+    if (!currentRoom) {
+      console.error("❌ Pas de room active");
+      return;
+    }
+    
+    console.log("🔄 Lancement nouvelle manche...");
     socket.emit("newRound", { roomId: currentRoom });
+    
+    // Cache le bouton immédiatement
+    newRoundBtn.style.display = "none";
   });
 
   newRoundBtnEl = newRoundBtn;
@@ -709,6 +754,96 @@ function buildAnswerCard(me) {
 // =========================
 // SOCKET LISTENERS
 // =========================
+
+function showResultPopup(isCorrect, solution) {
+  // Crée l'overlay de résultat
+  const overlay = document.createElement("div");
+  overlay.id = "result-overlay";
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.3s ease;
+  `;
+  
+  const resultContainer = document.createElement("div");
+  resultContainer.style.cssText = `
+    text-align: center;
+    animation: bounceIn 0.5s ease;
+  `;
+  
+  // Emoji et texte selon le résultat
+  const emoji = document.createElement("div");
+  emoji.style.cssText = `
+    font-size: 100px;
+    margin-bottom: 20px;
+    animation: pulse 1s ease infinite;
+  `;
+  emoji.textContent = isCorrect ? "🎉" : "😢";
+  
+  const resultText = document.createElement("div");
+  resultText.style.cssText = `
+    font-size: 48px;
+    font-weight: 900;
+    color: white;
+    margin-bottom: 16px;
+    text-shadow: 0 0 30px ${isCorrect ? 'rgba(16, 185, 129, 0.8)' : 'rgba(239, 68, 68, 0.8)'};
+  `;
+  resultText.textContent = isCorrect ? "CORRECT !" : "PERDU !";
+  
+  const solutionText = document.createElement("div");
+  solutionText.style.cssText = `
+    font-size: 24px;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 600;
+  `;
+  solutionText.textContent = `La réponse était : ${solution}`;
+  
+  // Animations CSS
+  const style = document.createElement("style");
+  style.textContent = `
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes bounceIn {
+      0% { transform: scale(0.3); opacity: 0; }
+      50% { transform: scale(1.05); }
+      70% { transform: scale(0.9); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+  `;
+  document.head.appendChild(style);
+  
+  resultContainer.appendChild(emoji);
+  resultContainer.appendChild(resultText);
+  resultContainer.appendChild(solutionText);
+  overlay.appendChild(resultContainer);
+  document.body.appendChild(overlay);
+  
+  // Disparaît après 3 secondes
+  setTimeout(() => {
+    overlay.style.animation = "fadeOut 0.3s ease";
+    overlay.style.opacity = "0";
+    setTimeout(() => {
+      overlay.remove();
+      style.remove();
+    }, 300);
+  }, 3000);
+}
 
 // ✨ NOUVEAU: Gestion du compte à rebours
 socket.on("countdown", ({ seconds }) => {
@@ -829,20 +964,43 @@ socket.on("revealRound", ({ solution, players: newPlayers }) => {
   currentSolution = solution;
   players = newPlayers;
 
-  if (answerFeedbackEl) {
-    answerFeedbackEl.textContent = `La bonne réponse était ${solution}.`;
-    answerFeedbackEl.style.color = "#2563eb";
-  }
+  console.log("🎉 Révélation - Solution:", solution, "| Je suis l'hôte ?", socket.id === hostId);
 
-  // ✨ Affiche le bouton "Nouvelle manche" uniquement pour l'hôte
-  if (newRoundBtnEl && socket.id === hostId) {
-    newRoundBtnEl.style.display = "inline-flex";
-  }
+  // ✨ Vérifie si le joueur a gagné ou perdu
+  const myGuess = guessesMap[socket.id];
+  const isCorrect = myGuess === solution;
+  
+  // Affiche le popup de résultat
+  showResultPopup(isCorrect, solution);
 
+  // ✨ IMPORTANT: Rafraîchir les cartes AVANT d'afficher le feedback
   renderPlayersDynamic();
+
+  // Maintenant on peut accéder au feedback et au bouton qui viennent d'être recréés
+  const feedback = document.getElementById("answer-feedback");
+  const newRoundBtn = document.getElementById("btn-new-round");
+
+  if (feedback) {
+    feedback.textContent = `La bonne réponse était ${solution}.`;
+    feedback.style.color = "#2563eb";
+  }
+
+  // ✨ Relance automatique après 5 secondes (uniquement pour l'hôte)
+  if (socket.id === hostId) {
+    console.log("⏰ Relance automatique dans 5 secondes...");
+    
+    setTimeout(() => {
+      console.log("🔄 Lancement automatique nouvelle manche");
+      socket.emit("newRound", { roomId: currentRoom });
+    }, 5000);
+  } else {
+    console.log("⏳ Pas l'hôte, attente du prochain round");
+  }
 });
 
 socket.on("newRoundStart", ({ round: srvRound, players: newPlayers, activeBlocks }) => {
+  console.log("🎮 Nouveau round:", srvRound, "| Blocs actifs:", activeBlocks?.length);
+  
   round = srvRound;
   players = newPlayers;
   guessesMap = {};
@@ -866,6 +1024,166 @@ socket.on("newRoundStart", ({ round: srvRound, players: newPlayers, activeBlocks
   
   drawGridFlash1s();
 });
+
+// ✨ NOUVEAU: Gestion de la fin de partie
+socket.on("gameOver", ({ players: finalPlayers, maxRounds }) => {
+  console.log("🏁 Partie terminée !");
+  showFinalScoreboard(finalPlayers, maxRounds);
+});
+
+function showFinalScoreboard(finalPlayers, maxRounds) {
+  // Trie les joueurs par score décroissant
+  const sortedPlayers = [...finalPlayers].sort((a, b) => (b.score || 0) - (a.score || 0));
+  
+  const overlay = document.createElement("div");
+  overlay.id = "scoreboard-overlay";
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.5s ease;
+  `;
+  
+  const scoreboardContainer = document.createElement("div");
+  scoreboardContainer.style.cssText = `
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border-radius: 24px;
+    padding: 40px;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    animation: bounceIn 0.6s ease;
+  `;
+  
+  // Titre
+  const title = document.createElement("h2");
+  title.textContent = "🏆 PARTIE TERMINÉE";
+  title.style.cssText = `
+    text-align: center;
+    font-size: 36px;
+    font-weight: 900;
+    color: white;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+  `;
+  
+  const subtitle = document.createElement("p");
+  subtitle.textContent = `${maxRounds} rounds joués`;
+  subtitle.style.cssText = `
+    text-align: center;
+    color: rgba(255,255,255,0.6);
+    font-size: 16px;
+    margin-bottom: 30px;
+  `;
+  
+  scoreboardContainer.appendChild(title);
+  scoreboardContainer.appendChild(subtitle);
+  
+  // Tableau des scores
+  sortedPlayers.forEach((player, index) => {
+    const playerRow = document.createElement("div");
+    playerRow.style.cssText = `
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: ${index === 0 ? 'linear-gradient(90deg, rgba(251,191,36,0.2), transparent)' : 'rgba(255,255,255,0.05)'};
+      border: 2px solid ${index === 0 ? '#fbbf24' : 'rgba(255,255,255,0.1)'};
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      transition: all 0.3s ease;
+    `;
+    
+    const leftSide = document.createElement("div");
+    leftSide.style.cssText = `display: flex; align-items: center; gap: 16px;`;
+    
+    const rank = document.createElement("div");
+    rank.textContent = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `#${index + 1}`;
+    rank.style.cssText = `
+      font-size: 24px;
+      font-weight: 900;
+      min-width: 40px;
+    `;
+    
+    const avatar = document.createElement("div");
+    avatar.textContent = (player.name || "?")[0].toUpperCase();
+    avatar.style.cssText = `
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 20px;
+    `;
+    
+    const name = document.createElement("div");
+    name.textContent = player.name || "Joueur";
+    name.style.cssText = `
+      color: white;
+      font-weight: 700;
+      font-size: 18px;
+    `;
+    
+    const score = document.createElement("div");
+    score.textContent = `${player.score || 0} pts`;
+    score.style.cssText = `
+      color: ${index === 0 ? '#fbbf24' : '#3b82f6'};
+      font-weight: 900;
+      font-size: 24px;
+    `;
+    
+    leftSide.appendChild(rank);
+    leftSide.appendChild(avatar);
+    leftSide.appendChild(name);
+    playerRow.appendChild(leftSide);
+    playerRow.appendChild(score);
+    
+    scoreboardContainer.appendChild(playerRow);
+  });
+  
+  // Bouton retour
+  const backBtn = document.createElement("button");
+  backBtn.textContent = "🏠 Retour au menu";
+  backBtn.style.cssText = `
+    width: 100%;
+    margin-top: 30px;
+    padding: 16px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(90deg, #3b82f6, #2563eb);
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+    transition: all 0.2s ease;
+  `;
+  
+  backBtn.addEventListener("click", () => {
+    overlay.remove();
+    showHome();
+    // Reset l'état
+    currentRoom = null;
+    round = 0;
+    players = [];
+  });
+  
+  scoreboardContainer.appendChild(backBtn);
+  overlay.appendChild(scoreboardContainer);
+  document.body.appendChild(overlay);
+}
 
 function updateInfo(r) {
   const n = players.length || 1;
