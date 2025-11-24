@@ -64,18 +64,20 @@ function broadcastRoom(roomId) {
     revealed: room.revealed,
     solution: room.solution,
     round: room.round,
-    maxPlayers: room.maxPlayers // ✨ Ajouté
+    maxPlayers: room.maxPlayers,
+    maxRounds: room.maxRounds // ✨ Ajouté
   });
 }
 
 io.on("connection", (socket) => {
   console.log("connect:", socket.id);
 
-  socket.on("createRoom", ({ name, maxPlayers }, cb) => {
+  socket.on("createRoom", ({ name, maxPlayers, maxRounds }, cb) => {
     const roomId = makeRoomId();
     
-    // ✨ Stocke le nombre max de joueurs (par défaut 3)
+    // ✨ Stocke le nombre max de joueurs et de rounds
     const maxP = maxPlayers || 3;
+    const maxR = maxRounds || 5;
     
     rooms[roomId] = {
       hostId: socket.id,
@@ -85,7 +87,8 @@ io.on("connection", (socket) => {
       solution: null,
       round: 0,
       activeBlocks: [],
-      maxPlayers: maxP // ✨ Ajouté
+      maxPlayers: maxP,
+      maxRounds: maxR // ✨ Ajouté
     };
     socket.join(roomId);
     cb({ roomId });
@@ -171,6 +174,19 @@ io.on("connection", (socket) => {
     const room = rooms[roomId];
     if (!room) return;
     if (socket.id !== room.hostId) return;
+    
+    // ✨ Vérifie si la partie est terminée
+    if (room.round >= room.maxRounds) {
+      console.log(`🏁 Partie terminée - ${room.round}/${room.maxRounds} rounds`);
+      
+      // Envoie le signal de fin de partie
+      io.to(roomId).emit("gameOver", {
+        players: room.players,
+        maxRounds: room.maxRounds
+      });
+      
+      return;
+    }
     
     // ✨ Envoie le signal de compte à rebours
     io.to(roomId).emit("countdown", { seconds: 3 });
