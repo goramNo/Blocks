@@ -5,12 +5,77 @@
   <title>BLOCKS by Dracks</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ✨ Zoom uniquement sur l'écran de jeu */
+    #screen-game {
+      zoom: 0.85;
+    }
+
+    /* Animation de fond pour le canvas */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.6; }
+    }
+
+    #grid-wrapper {
+      position: relative;
+      overflow: hidden;
+    }
+
+    #grid-wrapper::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      animation: pulse 3s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    /* Style du titre */
+    #game-title {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+      animation: titleFloat 3s ease-in-out infinite;
+      position: relative;
+    }
+
+    @keyframes titleFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-5px); }
+    }
+
+    #game-title::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+      border-radius: 2px;
+    }
+  </style>
 </head>
 <body>
   <!-- ÉCRAN ACCUEIL -->
   <div id="screen-home">
     <h1 id="logo">BLOCKS BY Dracks</h1>
-
     <!-- Pseudo -->
     <div id="pseudo-wrapper">
       <label for="player-name">Ton pseudo</label>
@@ -25,21 +90,20 @@
       </div>
       <div id="pseudo-status"></div>
     </div>
-
     <!-- Centre : Play + copier lien -->
     <div id="home-center">
       <button id="btn-play" class="btn-play">
         PLAY
       </button>
-
       <button
         id="btn-copy-link"
-        class="btn-copy "
+        class="btn-copy hidden"
         title="Copier le lien de la partie"
-      ></button>
+      >
+        📋 Copier le lien
+      </button>
       <span id="copy-label">Copier le lien de la partie</span>
     </div>
-
     <!-- Choix nombre de joueurs -->
     <div id="players-select">
       <button class="player-btn" data-players="1">1 Joueur</button>
@@ -56,36 +120,50 @@
     </div>
 
     <div id="game-main">
-      <h2 id="game-title">BLOCKS BY SKCARD</h2>
-
+      <!-- ✨ En-tête avec titre et bouton côte à côte -->
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; max-width: 1200px; margin-left: auto; margin-right: auto; padding: 0 20px; gap: 60px;">
+        <h2 id="game-title" style="margin: 0; flex-shrink: 0;">BLOCKS BY SKCARD</h2>
+        
+        <!-- ✨ Bouton Lancer + Banner Attente (à droite du titre) -->
+        <div id="lobby-controls" style="text-align: center; flex-shrink: 0;">
+          <button id="btn-start-game" class="hidden" style="
+            padding: 14px 40px;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            background: linear-gradient(90deg, #2563eb, #7c3aed);
+            border: none;
+            border-radius: 999px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+            transition: all 0.2s ease;
+            white-space: nowrap;
+          ">
+            🚀 Lancer la partie
+          </button>
+          
+          <div id="waiting-banner" class="hidden" style="
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            color: #64748b;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            white-space: nowrap;
+          ">
+            ⏳ En attente...
+          </div>
+        </div>
+      </div>
+      
       <!-- zone centrale : la grille / plateau -->
-      <div id="grid-wrapper">
+      <div id="grid-wrapper" style="max-height: 350px; aspect-ratio: 16/9; position: relative; background: white; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); overflow: hidden; margin: 0 auto 32px auto; max-width: 1200px;">
         <canvas id="board"></canvas>
       </div>
 
       <!-- cartes joueurs + compteur -->
       <div id="game-panels">
-        <!-- Adversaire 1 -->
-        <div class="player-card opponent-card" id="opponent-1">
-          <div class="player-card-title" id="opp1-name">Adversaire 1</div>
-          <div class="player-card-body" id="opp1-guess">?</div>
-        </div>
-
-        <!-- Joueur local -->
-        <div class="player-card answer-card">
-          <div class="player-card-title">Combien de Blocks</div>
-          <div class="player-card-body">
-            <button id="counter-btn" class="counter-btn">0</button>
-            <button id="btn-submit-answer">Valider</button>
-            <div id="answer-feedback"></div>
-          </div>
-        </div>
-
-        <!-- Adversaire 2 -->
-        <div class="player-card opponent-card" id="opponent-2">
-          <div class="player-card-title" id="opp2-name">Adversaire 2</div>
-          <div class="player-card-body" id="opp2-guess">?</div>
-        </div>
+        <!-- Dynamiquement généré par JavaScript -->
       </div>
     </div>
   </div>
