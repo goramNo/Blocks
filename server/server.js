@@ -2,47 +2,63 @@ const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 const cors = require("cors");
+const rateLimit = require("express-rate-limit");
 
 const app = express();
-app.use(cors());
+
+// ✅ CORS sécurisé (uniquement ton domaine)
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? 'https://dracks.online' 
+    : ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  credentials: true
+}));
+
+// ✅ Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Max 100 requêtes
+  message: 'Trop de requêtes, réessayez plus tard'
+});
+app.use(limiter);
 
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: "https://dracks.online" }
+  cors: { 
+    origin: process.env.NODE_ENV === 'production'
+      ? 'https://dracks.online'
+      : ['http://localhost:3000', 'http://127.0.0.1:3000'],
+    credentials: true
+  }
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-// rooms = {
-//   [roomId]: {
-//     hostId,
-//     players: [{id,name,score}],
-//     guesses: { socketId: number },
-//     revealed: false,
-//     solution: number,
-//     round: 0, // 0=lobby
-//     activeBlocks: [array of indices]
-//   }
-// }
 const rooms = {};
+
+// ✅ Fonction de validation
+function validateString(str, minLen = 1, maxLen = 20) {
+  return typeof str === 'string' && str.trim().length >= minLen && str.length <= maxLen;
+}
+
+function validateNumber(num, min, max) {
+  return typeof num === 'number' && num >= min && num <= max && Number.isInteger(num);
+}
 
 function makeRoomId() {
   return Math.random().toString(36).slice(2, 8);
 }
 
-// ✨ NOUVELLE FONCTION: Génère une grille aléatoire
 function generateRandomGrid() {
-  const totalCells = 24; // 6 colonnes × 4 lignes
+  const totalCells = 24;
   const minBlocks = 3;
   const maxBlocks = 12;
   
-  // Nombre aléatoire de blocs
   const numBlocks = Math.floor(Math.random() * (maxBlocks - minBlocks + 1)) + minBlocks;
   
   const activeBlocks = [];
   const available = Array.from({ length: totalCells }, (_, i) => i);
   
-  // Sélection aléatoire sans doublons
   for (let i = 0; i < numBlocks; i++) {
     const randomIndex = Math.floor(Math.random() * available.length);
     activeBlocks.push(available[randomIndex]);
@@ -65,7 +81,7 @@ function broadcastRoom(roomId) {
     solution: room.solution,
     round: room.round,
     maxPlayers: room.maxPlayers,
-    maxRounds: room.maxRounds // ✨ Ajouté
+    maxRounds: room.maxRounds
   });
 }
 
@@ -73,22 +89,33 @@ io.on("connection", (socket) => {
   console.log("connect:", socket.id);
 
   socket.on("createRoom", ({ name, maxPlayers, maxRounds }, cb) => {
-    const roomId = makeRoomId();
+    // ✅ VALIDATION
+    if (!validateString(name, 3, 20)) {
+      return cb({ error: "Pseudo invalide (3-20 caractères)" });
+    }
     
-    // ✨ Stocke le nombre max de joueurs et de rounds
+    if (!validateNumber(maxPlayers, 1, 3)) {
+      return cb({ error: "Nombre de joueurs invalide (1-3)" });
+    }
+    
+    if (!validateNumber(maxRounds, 3, 20)) {
+      return cb({ error: "Nombre de rounds invalide (3-20)" });
+    }
+    
+    const roomId = makeRoomId();
     const maxP = maxPlayers || 3;
     const maxR = maxRounds || 5;
     
     rooms[roomId] = {
       hostId: socket.id,
-      players: [{ id: socket.id, name, score: 0, maxPlayers: maxP }],
+      players: [{ id: socket.id, name: name.trim(), score: 0, maxPlayers: maxP }],
       guesses: {},
       revealed: false,
       solution: null,
       round: 0,
       activeBlocks: [],
       maxPlayers: maxP,
-      maxRounds: maxR // ✨ Ajouté
+      maxRounds: maxR
     };
     socket.join(roomId);
     cb({ roomId });
@@ -96,12 +123,25 @@ io.on("connection", (socket) => {
   });
 
   socket.on("joinRoom", ({ roomId, name }, cb) => {
+    // ✅ VALIDATION
+    if (!validateString(name, 3, 20)) {
+      return cb({ error: "Pseudo invalide (3-20 caractères)" });
+    }
+    
+    if (!validateString(roomId, 6, 6)) {
+      return cb({ error: "Room ID invalide" });
+    }
+    
     const room = rooms[roomId];
     if (!room) return cb({ error: "Partie introuvable" });
     
+    if (room.players.length >= room.maxPlayers) {
+      return cb({ error: "Partie complète" });
+    }
+    
     const existing = room.players.find(p => p.id === socket.id);
     if (!existing) {
-      room.players.push({ id: socket.id, name, score: 0 });
+      room.players.push({ id: socket.id, name: name.trim(), score: 0 });
     }
     
     socket.join(roomId);
@@ -109,52 +149,63 @@ io.on("connection", (socket) => {
     broadcastRoom(roomId);
   });
 
-  // Host lance la partie (round 1)
   socket.on("startGame", ({ roomId }) => {
     const room = rooms[roomId];
     if (!room) return;
-    if (socket.id !== room.hostId) return;
     
-    console.log("🚀 startGame - Envoi countdown"); // ✨ Debug
+    // ✅ Seul l'hôte peut démarrer
+    if (socket.id !== room.hostId) {
+      console.warn(`⚠️ ${socket.id} tente de start sans être host`);
+      return;
+    }
     
-    // ✨ Envoie le signal de compte à rebours
+    console.log("🚀 startGame - Envoi countdown");
+    
     io.to(roomId).emit("countdown", { seconds: 3 });
     
-    // ✨ Démarre le round après 5 secondes (3s countdown + 1s "GO!" + 1s buffer)
     setTimeout(() => {
       room.round = 1;
       room.revealed = false;
       room.guesses = {};
       
-      // Génère une nouvelle grille
       room.activeBlocks = generateRandomGrid();
       room.solution = room.activeBlocks.length;
       
-      console.log(`✅ Round 1 démarré - Solution: ${room.solution}`); // ✨ Debug
+      console.log(`✅ Round 1 démarré - Solution: ${room.solution}`);
       
-      // Envoie la grille aux clients
+      // ⚠️ NE JAMAIS envoyer activeBlocks au client !
       io.to(roomId).emit("newRoundStart", {
         round: room.round,
-        players: room.players,
-        activeBlocks: room.activeBlocks
+        players: room.players
+        // activeBlocks retiré pour éviter la triche
       });
       
       broadcastRoom(roomId);
-    }, 5000); // ✨ 5 secondes pour laisser le temps au "GO!"
+    }, 5000);
   });
 
   socket.on("sendGuess", ({ roomId, guess }) => {
     const room = rooms[roomId];
     if (!room || room.round === 0 || room.revealed) return;
     
+    // ✅ VALIDATION stricte
+    if (!validateNumber(guess, 0, 24)) {
+      console.warn(`⚠️ Guess invalide de ${socket.id}: ${guess}`);
+      return;
+    }
+    
+    // ✅ Empêche de voter plusieurs fois
+    if (room.guesses[socket.id] !== undefined) {
+      console.warn(`⚠️ ${socket.id} tente de voter plusieurs fois`);
+      return;
+    }
+    
     room.guesses[socket.id] = guess;
     io.to(roomId).emit("guessUpdate", room.guesses);
     
-    // si tout le monde a répondu → reveal auto
     if (Object.keys(room.guesses).length === room.players.length) {
       room.revealed = true;
       
-      // scoring simple: +1 si exact
       room.players = room.players.map(p => {
         const g = room.guesses[p.id];
         if (g === room.solution) return { ...p, score: (p.score || 0) + 1 };
@@ -173,13 +224,16 @@ io.on("connection", (socket) => {
   socket.on("newRound", ({ roomId }) => {
     const room = rooms[roomId];
     if (!room) return;
-    if (socket.id !== room.hostId) return;
     
-    // ✨ Vérifie si la partie est terminée
+    // ✅ Seul l'hôte peut lancer un nouveau round
+    if (socket.id !== room.hostId) {
+      console.warn(`⚠️ ${socket.id} tente newRound sans être host`);
+      return;
+    }
+    
     if (room.round >= room.maxRounds) {
       console.log(`🏁 Partie terminée - ${room.round}/${room.maxRounds} rounds`);
       
-      // Envoie le signal de fin de partie
       io.to(roomId).emit("gameOver", {
         players: room.players,
         maxRounds: room.maxRounds
@@ -188,28 +242,24 @@ io.on("connection", (socket) => {
       return;
     }
     
-    // ✨ Envoie le signal de compte à rebours
     io.to(roomId).emit("countdown", { seconds: 3 });
     
-    // ✨ Démarre le nouveau round après 5 secondes (3s countdown + 1s "GO!" + 1s buffer)
     setTimeout(() => {
       room.round += 1;
       room.revealed = false;
       room.guesses = {};
       
-      // Génère une nouvelle grille
       room.activeBlocks = generateRandomGrid();
       room.solution = room.activeBlocks.length;
       
-      // Envoie la nouvelle grille
+      // ⚠️ NE JAMAIS envoyer activeBlocks !
       io.to(roomId).emit("newRoundStart", {
         round: room.round,
-        players: room.players,
-        activeBlocks: room.activeBlocks
+        players: room.players
       });
       
       broadcastRoom(roomId);
-    }, 5000); // ✨ 5 secondes pour laisser le temps au "GO!"
+    }, 5000);
   });
 
   socket.on("disconnect", () => {
@@ -220,7 +270,6 @@ io.on("connection", (socket) => {
       room.players = room.players.filter(p => p.id !== socket.id);
       delete room.guesses[socket.id];
       
-      // si host part → on donne host au premier joueur
       if (room.hostId === socket.id) {
         room.hostId = room.players[0]?.id || null;
       }
@@ -234,10 +283,8 @@ io.on("connection", (socket) => {
   });
 });
 
-// Servir les fichiers statiques depuis la racine du projet
 app.use(express.static('../'));
 
-// Route principale
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/../index.html');
 });
