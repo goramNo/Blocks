@@ -234,12 +234,12 @@ io.on("connection", (socket) => {
   });
 });
 
-// Servir les fichiers statiques depuis 'public'
-app.use(express.static('public'));
+// Servir les fichiers statiques depuis la racine du projet
+app.use(express.static('../'));
 
 // Route principale
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html');
+  res.sendFile(__dirname + '/../index.html');
 });
 
 server.listen(PORT, () => {
