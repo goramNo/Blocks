@@ -8,7 +8,7 @@ app.use(cors());
 
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: "*" }
+  cors: { origin: "https://dracks.online" }
 });
 
 const PORT = 3000;
