@@ -234,13 +234,14 @@ io.on("connection", (socket) => {
   });
 });
 
-// Servir les fichiers statiques depuis le dossier 'public'
+// Servir les fichiers statiques depuis 'public'
 app.use(express.static('public'));
 
-// Si aucun fichier statique ne correspond, renvoie index.html
-app.get('*', (req, res) => {
+// Route principale
+app.get('/', (req, res) => {
   res.sendFile(__dirname + '/public/index.html');
 });
+
 server.listen(PORT, () => {
   console.log(`🚀 Server listening on http://localhost:${PORT}`);
 });
