@@ -1,7 +1,7 @@
 // =========================
 // SOCKET.IO
 // =========================
-const socket = io("http://localhost:3000");
+const socket = io(); // Se connecte automatiquement au domaine actuel
 
 // =========================
 // DOM
