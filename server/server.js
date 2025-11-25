@@ -234,10 +234,13 @@ io.on("connection", (socket) => {
   });
 });
 
-app.get("/", (req, res) => {
-  res.send("✔️ Blocks Server running - WebSocket OK");
-});
+// Servir les fichiers statiques depuis le dossier 'public'
+app.use(express.static('public'));
 
+// Si aucun fichier statique ne correspond, renvoie index.html
+app.get('*', (req, res) => {
+  res.sendFile(__dirname + '/public/index.html');
+});
 server.listen(PORT, () => {
   console.log(`🚀 Server listening on http://localhost:${PORT}`);
 });
