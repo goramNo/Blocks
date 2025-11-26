@@ -222,47 +222,49 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("newRound", ({ roomId }) => {
-    const room = rooms[roomId];
-    if (!room) return;
+ socket.on("newRound", ({ roomId }) => {
+  const room = rooms[roomId];
+  if (!room) return;
+  
+  // ✅ Seul l'hôte peut lancer un nouveau round
+  if (socket.id !== room.hostId) {
+    console.warn(`⚠️ ${socket.id} tente newRound sans être host`);
+    return;
+  }
+  
+  if (room.round >= room.maxRounds) {
+    console.log(`🏁 Partie terminée - ${room.round}/${room.maxRounds} rounds`);
     
-    // ✅ Seul l'hôte peut lancer un nouveau round
-    if (socket.id !== room.hostId) {
-      console.warn(`⚠️ ${socket.id} tente newRound sans être host`);
-      return;
-    }
+    io.to(roomId).emit("gameOver", {
+      players: room.players,
+      maxRounds: room.maxRounds
+    });
     
-    if (room.round >= room.maxRounds) {
-      console.log(`🏁 Partie terminée - ${room.round}/${room.maxRounds} rounds`);
-      
-      io.to(roomId).emit("gameOver", {
-        players: room.players,
-        maxRounds: room.maxRounds
-      });
-      
-      return;
-    }
-    
-    io.to(roomId).emit("countdown", { seconds: 3 });
-    
-    setTimeout(() => {
-      room.round += 1;
-      room.revealed = false;
-      room.guesses = {};
-      
-      room.activeBlocks = generateRandomGrid();
-      room.solution = room.activeBlocks.length;
-      
-      // ✅ ENVOIE activeBlocks au client
-      io.to(roomId).emit("newRoundStart", {
-        round: room.round,
-        players: room.players,
-        activeBlocks: room.activeBlocks // ✅ CORRIGÉ
-      });
-      
-      broadcastRoom(roomId);
-    }, 5000);
+    return;
+  }
+  
+  // ❌ RETIRE LE COUNTDOWN ICI
+  // io.to(roomId).emit("countdown", { seconds: 3 });
+  
+  // ✅ LANCE IMMÉDIATEMENT LE NOUVEAU ROUND (sans setTimeout)
+  room.round += 1;
+  room.revealed = false;
+  room.guesses = {};
+  
+  room.activeBlocks = generateRandomGrid();
+  room.solution = room.activeBlocks.length;
+  
+  console.log(`✅ Round ${room.round} démarré - Solution: ${room.solution}`);
+  
+  // ✅ ENVOIE activeBlocks au client
+  io.to(roomId).emit("newRoundStart", {
+    round: room.round,
+    players: room.players,
+    activeBlocks: room.activeBlocks
   });
+  
+  broadcastRoom(roomId);
+});
 
   socket.on("disconnect", () => {
     console.log("disconnect:", socket.id);
