@@ -1,4 +1,6 @@
-/* -------- RESET DE BASE -------- */
+/* ================================================
+   RESET & VARIABLES
+   ================================================ */
 
 * {
   box-sizing: border-box;
@@ -17,7 +19,9 @@
   --border-soft: #e5e7eb;
 }
 
-/* -------- BODY + BACKGROUND -------- */
+/* ================================================
+   BODY & BACKGROUND
+   ================================================ */
 
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -37,15 +41,17 @@ body::before {
   inset: 0;
   pointer-events: none;
   background-image: linear-gradient(
-      120deg,
-      rgba(148, 163, 184, 0.15) 1px,
-      transparent 1px
-    );
+    120deg,
+    rgba(148, 163, 184, 0.15) 1px,
+    transparent 1px
+  );
   background-size: 22px 22px;
   opacity: 0.4;
 }
 
-/* -------- ÉCRAN ACCUEIL -------- */
+/* ================================================
+   ÉCRAN ACCUEIL
+   ================================================ */
 
 #screen-home {
   height: 100vh;
@@ -56,8 +62,7 @@ body::before {
   position: relative;
 }
 
-/* -------- LOGO -------- */
-
+/* Logo principal */
 #logo {
   font-size: 28px;
   letter-spacing: 8px;
@@ -68,7 +73,9 @@ body::before {
   margin-bottom: 20px;
 }
 
-/* -------- PSEUDO ZONE (esthétique) -------- */
+/* ================================================
+   SECTION PSEUDO
+   ================================================ */
 
 #pseudo-wrapper {
   margin-top: 28px;
@@ -78,8 +85,6 @@ body::before {
   justify-content: center;
   width: 100%;
 }
-
-/* Label "Ton pseudo" */
 
 #pseudo-wrapper label {
   font-size: 16px;
@@ -94,8 +99,6 @@ body::before {
   position: relative;
 }
 
-/* Trait futuriste */
-
 #pseudo-wrapper label::before {
   content: "";
   position: absolute;
@@ -107,8 +110,6 @@ body::before {
   border-radius: 999px;
   background: linear-gradient(90deg, var(--accent), var(--accent-2));
 }
-
-/* Ligne : input + OK */
 
 .pseudo-input-row {
   display: flex;
@@ -122,8 +123,6 @@ body::before {
     0 12px 30px rgba(148, 163, 184, 0.35),
     0 0 0 1px rgba(226, 232, 240, 0.9);
 }
-
-/* Champ input pseudo */
 
 #player-name {
   width: 260px;
@@ -144,8 +143,6 @@ body::before {
   background: #ffffff;
 }
 
-/* Bouton OK */
-
 #btn-validate-name {
   padding: 9px 22px;
   font-size: 15px;
@@ -164,8 +161,6 @@ body::before {
   box-shadow: 0 12px 26px rgba(79, 70, 229, 0.55);
 }
 
-/* Texte statut pseudo */
-
 #pseudo-status {
   font-size: 14px;
   text-align: center;
@@ -174,11 +169,13 @@ body::before {
   color: var(--text-soft);
 }
 
-/* -------- PLAY CARD -------- */
+/* ================================================
+   BOUTON PLAY
+   ================================================ */
 
 #home-center {
   position: absolute;
-  top: 48%;
+  top: 55%; /* Au lieu de 48% ou 50% */
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
@@ -211,8 +208,6 @@ body::before {
   background: linear-gradient(145deg, #e0ecff, #ffffff);
 }
 
-/* Bouton copier lien */
-
 .btn-copy {
   width: 40px;
   height: 40px;
@@ -234,7 +229,9 @@ body::before {
   color: var(--text-soft);
 }
 
-/* -------- PLAYER SELECT -------- */
+/* ================================================
+   SÉLECTION NOMBRE DE JOUEURS
+   ================================================ */
 
 #players-select {
   position: absolute;
@@ -270,9 +267,9 @@ body::before {
 .player-btn::after {
   content: "";
   position: absolute;
-  left: 50%;                    /* centre horizontalement */
-  transform: translateX(-50%);  /* centre par rapport au texte */
-  bottom: -2px;                 /* léger offset sous le texte */
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -2px;
   height: 2px;
   width: 0;
   background: linear-gradient(90deg, var(--accent), var(--accent-2));
@@ -280,11 +277,69 @@ body::before {
 }
 
 .player-btn.active::after {
-  width: 70%;                   /* longueur du soulignage (ajuste si tu veux) */
+  width: 70%;
 }
 
+/* ================================================
+   SÉLECTION NOMBRE DE ROUNDS
+   ================================================ */
 
-/* -------- ÉCRAN JEU -------- */
+#rounds-select {
+  margin-top: 24px;
+  width: 100%;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 20px;
+}
+
+#rounds-select label {
+  display: block;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 15px;
+  text-align: center;
+}
+
+.rounds-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.round-btn {
+  padding: 10px 24px;
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+  background: white;
+  color: #0f172a;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  min-width: 100px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.round-btn.active {
+  border-color: #3b82f6;
+  background: #3b82f6;
+  color: white;
+}
+
+.round-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* ================================================
+   ÉCRAN DE JEU
+   ================================================ */
 
 .hidden {
   display: none !important;
@@ -347,15 +402,16 @@ body::before {
   text-transform: uppercase;
 }
 
-/* Grille */
+/* ================================================
+   GRILLE DE JEU (CANVAS)
+   ================================================ */
 
 #grid-wrapper {
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.9);
   padding: 18px;
-  max-width: 620px;
-  width: 80%;
-  max-height: 360px;
+  width: min(80%, 620px); /* S'adapte automatiquement */
+  height: min(40vh, 360px); /* Utilise viewport height */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -369,7 +425,9 @@ body::before {
   height: 100%;
 }
 
-/* Cartes bas */
+/* ================================================
+   CARTES DE JOUEURS
+   ================================================ */
 
 #game-panels {
   width: 100%;
@@ -398,10 +456,7 @@ body::before {
   color: var(--text-soft);
 }
 
-/* Adversaires */
-
-/* Cartes adversaires plus petites et dans le style de la carte centrale */
-
+/* Cartes adversaires */
 .opponent-card {
   min-height: 140px;
   padding: 14px 16px;
@@ -413,14 +468,12 @@ body::before {
   border: 1px solid rgba(248, 113, 113, 0.7);
 }
 
-/* Titre "Humility", "En attente..." etc. */
 .opponent-card .player-card-title {
   font-size: 15px;
   color: var(--text-soft);
   margin-bottom: 10px;
 }
 
-/* Zone du nombre dans la carte adversaire : même mood que le compteur */
 .opponent-card .player-card-body {
   border-radius: 18px;
   border: 2px solid rgba(248, 113, 113, 0.35);
@@ -434,28 +487,7 @@ body::before {
   color: var(--text-main);
 }
 
-/* Flou des nombres adversaires avant révélation */
-.blurred {
-  filter: blur(7px);
-  user-select: none;
-}
-
-/* Petite anim quand on dévoile */
-.revealed {
-  animation: revealGuess 0.25s ease-out;
-}
-
-@keyframes revealGuess {
-  from {
-    filter: blur(8px);
-    opacity: 0.3;
-  }
-  to {
-    filter: blur(0);
-    opacity: 1;
-  }
-}
-
+/* Effets de révélation */
 .blurred {
   filter: blur(6px);
   user-select: none;
@@ -476,8 +508,7 @@ body::before {
   }
 }
 
-/* Carte milieu (réponse) */
-
+/* Carte du joueur principal (réponse) */
 .answer-card {
   border-color: rgba(59, 130, 246, 0.9);
   box-shadow:
@@ -492,7 +523,9 @@ body::before {
   align-items: center;
 }
 
-/* Compteur */
+/* ================================================
+   COMPTEUR & BOUTONS
+   ================================================ */
 
 .counter-btn {
   min-width: 250px;
@@ -519,8 +552,6 @@ body::before {
   border-color: var(--accent);
 }
 
-/* Bouton Valider */
-
 #btn-submit-answer {
   padding: 7px 16px;
   border-radius: 999px;
@@ -543,53 +574,219 @@ body::before {
   min-height: 18px;
   color: var(--text-soft);
 }
-/* Fix pour les boutons de rounds */
-#rounds-select {
-  margin-top: 20px;
-  width: 100%;
-  max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
-}
 
-#rounds-select > div {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  flex-wrap: wrap; /* Permet le wrap sur petits écrans */
-}
+/* ================================================
+   RESPONSIVE - MOBILE
+   ================================================ */
 
-.round-btn {
-  padding: 10px 24px !important;
-  border-radius: 12px !important;
-  border: 2px solid #e2e8f0 !important;
-  background: white !important;
-  color: #0f172a !important;
-  cursor: pointer !important;
-  font-weight: 600 !important;
-  font-size: 14px !important;
-  transition: all 0.2s ease !important;
-  white-space: nowrap; /* Empêche le texte de se casser */
-  min-width: 90px;
-  text-align: center;
-}
+@media (max-width: 768px) {
+  #screen-home {
+    padding: 20px 16px;
+  }
 
-.round-btn.active {
-  border: 2px solid #3b82f6 !important;
-  background: #3b82f6 !important;
-  color: white !important;
-}
+  #logo {
+    font-size: 22px;
+    letter-spacing: 4px;
+  }
 
-.round-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
+  #player-name {
+    width: 200px;
+  }
 
-/* Responsive pour mobile */
-@media (max-width: 600px) {
+  #home-center {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .btn-play {
+    width: 240px;
+    height: 120px;
+    font-size: 22px;
+  }
+
+  #players-select {
+    gap: 40px;
+    font-size: 16px;
+  }
+
   .round-btn {
-    padding: 8px 16px !important;
-    font-size: 13px !important;
-    min-width: 80px;
+    padding: 8px 16px;
+    font-size: 13px;
+    min-width: 85px;
+  }
+
+  #game-main {
+    padding: 16px 20px;
+    gap: 20px;
+  }
+
+  #game-title {
+    font-size: 18px;
+    letter-spacing: 2px;
+  }
+
+  #grid-wrapper {
+    width: 95%;
+    max-height: 250px;
+    padding: 12px;
+  }
+
+  #game-panels {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .counter-btn {
+    min-width: 180px;
+    min-height: 150px;
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 600px) {
+  #rounds-select {
+    padding: 0 16px;
+  }
+  
+  .rounds-buttons {
+    gap: 8px;
+  }
+  
+  .round-btn {
+    padding: 8px 18px;
+    font-size: 13px;
+    min-width: 85px;
+  }
+}
+/* ================================================
+   RESPONSIVE - LAPTOPS (1366px - 1600px)
+   ================================================ */
+
+@media (max-width: 1600px) {
+  #logo {
+    font-size: 24px;
+    letter-spacing: 6px;
+  }
+
+  .btn-play {
+    width: 240px;
+    height: 130px;
+    font-size: 22px;
+    letter-spacing: 3px;
+  }
+
+  #players-select {
+    gap: 60px;
+    font-size: 16px;
+  }
+
+  #game-title {
+    font-size: 20px;
+    letter-spacing: 3px;
+  }
+
+  #grid-wrapper {
+    max-width: 550px;
+    max-height: 320px;
+  }
+
+  #game-panels {
+    max-width: 800px;
+    gap: 20px;
+  }
+
+  .counter-btn {
+    min-width: 200px;
+    min-height: 160px;
+    font-size: 38px;
+  }
+}
+
+@media (max-width: 1400px) {
+  #screen-home {
+    padding: 20px 32px;
+  }
+
+  #home-center {
+    top: 45%;
+  }
+
+  .btn-play {
+    width: 220px;
+    height: 120px;
+    font-size: 20px;
+  }
+
+  #game-main {
+    padding: 20px 32px;
+    gap: 24px;
+  }
+
+  #grid-wrapper {
+    max-width: 500px;
+    max-height: 280px;
+  }
+
+  .counter-btn {
+    min-width: 180px;
+    min-height: 140px;
+    font-size: 34px;
+  }
+}
+
+/* Spécial pour les écrans 1366x768 (laptops courants) */
+@media (max-width: 1366px) and (max-height: 768px) {
+  #logo {
+    font-size: 22px;
+    margin-bottom: 16px;
+  }
+
+  #pseudo-wrapper {
+    margin-top: 20px;
+  }
+
+  #home-center {
+    top: 42%;
+  }
+
+  .btn-play {
+    width: 200px;
+    height: 110px;
+    font-size: 18px;
+  }
+
+  #players-select {
+    bottom: 50px;
+    gap: 50px;
+  }
+
+  #rounds-select {
+    margin-top: 16px;
+  }
+
+  #game-main {
+    padding: 16px 24px;
+    gap: 20px;
+  }
+
+  #grid-wrapper {
+    max-width: 450px;
+    max-height: 240px;
+  }
+
+  #game-panels {
+    max-width: 700px;
+    gap: 16px;
+  }
+
+  .player-card {
+    min-height: 100px;
+    padding: 14px 16px;
+  }
+
+  .counter-btn {
+    min-width: 150px;
+    min-height: 120px;
+    font-size: 30px;
   }
 }

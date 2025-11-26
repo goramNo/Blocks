@@ -6,19 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
   <style>
-    /* ✨ Zoom uniquement sur l'écran de jeu */
-    /* Dans le <style> de index.html */
-#screen-game {
-  zoom: 1; /* Normal par défaut */
-}
-
-/* Zoom uniquement sur desktop */
-@media (min-width: 1024px) {
-  #screen-game {
-    zoom: 0.85;
-  }
-}
-
+  
     /* Animation de fond pour le canvas */
     @keyframes float {
       0%, 100% { transform: translateY(0px); }
@@ -144,15 +132,15 @@
       <button class="player-btn" data-players="3">3 Joueurs</button>
     </div>
 
-    <!-- ✨ NOUVEAU: Choix du nombre de rounds -->
-    <div id="rounds-select" style="margin-top: 20px;">
-      <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #0f172a;">Nombre de rounds :</label>
-      <div style="display: flex; gap: 12px; justify-content: center;">
-       <button class="round-btn" data-rounds="3">3 rounds</button>
-        <button class="round-btn active" data-rounds="5">5 rounds</button>
-        <button class="round-btn" data-rounds="10">10 rounds</button>
-      </div>
-    </div>
+   <!-- ✨ NOUVEAU: Choix du nombre de rounds -->
+<div id="rounds-select">
+  <label>Nombre de rounds :</label>
+  <div class="rounds-buttons">
+    <button class="round-btn" data-rounds="3">3 rounds</button>
+    <button class="round-btn active" data-rounds="5">5 rounds</button>
+    <button class="round-btn" data-rounds="10">10 rounds</button>
+  </div>
+</div>
   </div>
 
   <!-- ÉCRAN JEU -->

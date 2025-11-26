@@ -1,5 +1,10 @@
 {
+  "name": "blocks-client",
+  "version": "1.0.0",
   "scripts": {
-    "build": "webpack"
+    "build": "javascript-obfuscator main.js --output main.min.js --compact true --self-defending true"
+  },
+  "devDependencies": {
+    "javascript-obfuscator": "^4.1.0"
   }
 }
