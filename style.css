@@ -31,6 +31,7 @@ body {
     var(--bg-main);
   color: var(--text-main);
   height: 100vh;
+  overflow-x: hidden;
   overflow: hidden;
   position: relative;
 }
@@ -346,13 +347,14 @@ body::before {
 }
 
 #screen-game {
-  height: 100vh;
+  height: auto;
   display: flex;
   flex-direction: column;
   background:
     radial-gradient(circle at 20% 0%, #e0f2fe 0, transparent 55%),
     radial-gradient(circle at 80% 100%, #ede9fe 0, transparent 55%),
     #f9fafb;
+    overflow-y: auto;
   color: var(--text-main);
 }
 
