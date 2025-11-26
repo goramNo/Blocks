@@ -7,7 +7,7 @@ const rateLimit = require("express-rate-limit");
 const app = express();
 app.set('trust proxy', 1); 
 
-// ✅ CORS sécurisé (uniquement ton domaine)
+// CORS sécurisé
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? 'https://dracks.online' 
@@ -37,7 +37,7 @@ const PORT = process.env.PORT || 3000;
 
 const rooms = {};
 
-// ✅ Fonction de validation
+// Fonctions de validation
 function validateString(str, minLen = 1, maxLen = 20) {
   return typeof str === 'string' && str.trim().length >= minLen && str.length <= maxLen;
 }
@@ -90,7 +90,6 @@ io.on("connection", (socket) => {
   console.log("connect:", socket.id);
 
   socket.on("createRoom", ({ name, maxPlayers, maxRounds }, cb) => {
-    // ✅ VALIDATION
     if (!validateString(name, 3, 20)) {
       return cb({ error: "Pseudo invalide (3-20 caractères)" });
     }
@@ -124,7 +123,6 @@ io.on("connection", (socket) => {
   });
 
   socket.on("joinRoom", ({ roomId, name }, cb) => {
-    // ✅ VALIDATION
     if (!validateString(name, 3, 20)) {
       return cb({ error: "Pseudo invalide (3-20 caractères)" });
     }
@@ -150,11 +148,11 @@ io.on("connection", (socket) => {
     broadcastRoom(roomId);
   });
 
+  // ✅ COUNTDOWN UNIQUEMENT ICI (au lancement de la partie)
   socket.on("startGame", ({ roomId }) => {
     const room = rooms[roomId];
     if (!room) return;
     
-    // ✅ Seul l'hôte peut démarrer
     if (socket.id !== room.hostId) {
       console.warn(`⚠️ ${socket.id} tente de start sans être host`);
       return;
@@ -162,6 +160,7 @@ io.on("connection", (socket) => {
     
     console.log("🚀 startGame - Envoi countdown");
     
+    // ✅ COUNTDOWN DE 3 SECONDES
     io.to(roomId).emit("countdown", { seconds: 3 });
     
     setTimeout(() => {
@@ -174,28 +173,25 @@ io.on("connection", (socket) => {
       
       console.log(`✅ Round 1 démarré - Solution: ${room.solution}`);
       
-      // ✅ ENVOIE activeBlocks au client
       io.to(roomId).emit("newRoundStart", {
         round: room.round,
         players: room.players,
-        activeBlocks: room.activeBlocks // ✅ CORRIGÉ
+        activeBlocks: room.activeBlocks
       });
       
       broadcastRoom(roomId);
-    }, 5000);
+    }, 5000); // Attend 5 secondes (3s countdown + 2s GO)
   });
 
   socket.on("sendGuess", ({ roomId, guess }) => {
     const room = rooms[roomId];
     if (!room || room.round === 0 || room.revealed) return;
     
-    // ✅ VALIDATION stricte
     if (!validateNumber(guess, 0, 24)) {
       console.warn(`⚠️ Guess invalide de ${socket.id}: ${guess}`);
       return;
     }
     
-    // ✅ Empêche de voter plusieurs fois
     if (room.guesses[socket.id] !== undefined) {
       console.warn(`⚠️ ${socket.id} tente de voter plusieurs fois`);
       return;
@@ -222,49 +218,45 @@ io.on("connection", (socket) => {
     }
   });
 
- socket.on("newRound", ({ roomId }) => {
-  const room = rooms[roomId];
-  if (!room) return;
-  
-  // ✅ Seul l'hôte peut lancer un nouveau round
-  if (socket.id !== room.hostId) {
-    console.warn(`⚠️ ${socket.id} tente newRound sans être host`);
-    return;
-  }
-  
-  if (room.round >= room.maxRounds) {
-    console.log(`🏁 Partie terminée - ${room.round}/${room.maxRounds} rounds`);
+  // ✅ PAS DE COUNTDOWN ICI (entre les manches)
+  socket.on("newRound", ({ roomId }) => {
+    const room = rooms[roomId];
+    if (!room) return;
     
-    io.to(roomId).emit("gameOver", {
+    if (socket.id !== room.hostId) {
+      console.warn(`⚠️ ${socket.id} tente newRound sans être host`);
+      return;
+    }
+    
+    if (room.round >= room.maxRounds) {
+      console.log(`🏁 Partie terminée - ${room.round}/${room.maxRounds} rounds`);
+      
+      io.to(roomId).emit("gameOver", {
+        players: room.players,
+        maxRounds: room.maxRounds
+      });
+      
+      return;
+    }
+    
+    // ✅ PAS DE COUNTDOWN - Lance directement le nouveau round
+    room.round += 1;
+    room.revealed = false;
+    room.guesses = {};
+    
+    room.activeBlocks = generateRandomGrid();
+    room.solution = room.activeBlocks.length;
+    
+    console.log(`✅ Round ${room.round} démarré - Solution: ${room.solution}`);
+    
+    io.to(roomId).emit("newRoundStart", {
+      round: room.round,
       players: room.players,
-      maxRounds: room.maxRounds
+      activeBlocks: room.activeBlocks
     });
     
-    return;
-  }
-  
-  // ❌ RETIRE LE COUNTDOWN ICI
-  // io.to(roomId).emit("countdown", { seconds: 3 });
-  
-  // ✅ LANCE IMMÉDIATEMENT LE NOUVEAU ROUND (sans setTimeout)
-  room.round += 1;
-  room.revealed = false;
-  room.guesses = {};
-  
-  room.activeBlocks = generateRandomGrid();
-  room.solution = room.activeBlocks.length;
-  
-  console.log(`✅ Round ${room.round} démarré - Solution: ${room.solution}`);
-  
-  // ✅ ENVOIE activeBlocks au client
-  io.to(roomId).emit("newRoundStart", {
-    round: room.round,
-    players: room.players,
-    activeBlocks: room.activeBlocks
+    broadcastRoom(roomId);
   });
-  
-  broadcastRoom(roomId);
-});
 
   socket.on("disconnect", () => {
     console.log("disconnect:", socket.id);
