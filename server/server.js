@@ -15,10 +15,10 @@ app.use(cors({
   credentials: true
 }));
 
-// ✅ Rate limiting
+// Dans server/server.js
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Max 100 requêtes
+  windowMs: 15 * 60 * 1000,
+  max: 1000, // ✅ Change de 100 à 1000
   message: 'Trop de requêtes, réessayez plus tard'
 });
 app.use(limiter);
