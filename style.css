@@ -63,7 +63,6 @@ body::before {
   position: relative;
 }
 
-/* Logo principal */
 #logo {
   font-size: 28px;
   letter-spacing: 8px;
@@ -171,17 +170,18 @@ body::before {
 }
 
 /* ================================================
-   BOUTON PLAY
+   BOUTON PLAY & COPY
    ================================================ */
 
 #home-center {
   position: absolute;
-  top: 55%; /* Au lieu de 48% ou 50% */
+  top: 55%;
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 24px;
+  gap: 16px;
 }
 
 .btn-play {
@@ -210,24 +210,22 @@ body::before {
 }
 
 .btn-copy {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  border: 1px solid rgba(148, 163, 184, 0.7);
-  background: rgba(255, 255, 255, 0.85);
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+  background: white;
   cursor: pointer;
-  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.12);
-  transition: 0.18s ease;
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: 0.2s ease;
 }
 
 .btn-copy:hover {
   transform: translateY(-2px);
   border-color: var(--accent-2);
-}
-
-#copy-label {
-  font-size: 15px;
-  color: var(--text-soft);
+  background: #d1fae5;
 }
 
 /* ================================================
@@ -354,7 +352,7 @@ body::before {
     radial-gradient(circle at 20% 0%, #e0f2fe 0, transparent 55%),
     radial-gradient(circle at 80% 100%, #ede9fe 0, transparent 55%),
     #f9fafb;
-    overflow-y: auto;
+  overflow-y: auto;
   color: var(--text-main);
 }
 
@@ -376,6 +374,7 @@ body::before {
   cursor: pointer;
   color: var(--text-main);
   font-size: 14px;
+  transition: 0.2s ease;
 }
 
 #btn-back:hover {
@@ -399,11 +398,40 @@ body::before {
   gap: 32px;
 }
 
+/* ================================================
+   EN-TÊTE DU JEU (TITRE + BOUTON)
+   ================================================ */
+
+#game-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto 24px auto;
+  padding: 0 20px;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
 #game-title {
+  flex-shrink: 0;
+  margin: 0;
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 900;
   letter-spacing: 4px;
   text-transform: uppercase;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+#lobby-controls {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 /* ================================================
@@ -414,16 +442,18 @@ body::before {
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.9);
   padding: 18px;
-  max-width: 620px;
+  max-width: 700px;
   min-height: 200px;
-  width: 80%;
-  max-height: 360px;
+  width: 90%;
+  height: min(45vh, 400px);
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow:
     0 22px 40px rgba(15, 23, 42, 0.15),
     0 0 0 1px rgba(226, 232, 240, 0.9);
+  position: relative;
+  overflow: hidden;
 }
 
 #board {
@@ -431,34 +461,6 @@ body::before {
   height: 100%;
   max-width: 100%;
   max-height: 100%;
-}
-/* Pour les écrans de laptops (1366px - 1600px) */
-@media (max-width: 1600px) {
-  #grid-wrapper {
-    width: min(85%, 600px);
-    height: min(35vh, 350px);
-  }
-}
-
-@media (max-width: 1400px) {
-  #grid-wrapper {
-    width: min(80%, 550px);
-    height: min(30vh, 300px);
-  }
-}
-
-/* Pour les laptops 1366x768 */
-@media (max-width: 1366px) and (max-height: 768px) {
-  #grid-wrapper {
-    width: min(75%, 500px);
-    height: min(35vh, 280px);
-    padding: 12px;
-  }
-
-  #game-main {
-    padding: 16px 24px;
-    gap: 16px;
-  }
 }
 
 /* ================================================
@@ -468,9 +470,11 @@ body::before {
 #game-panels {
   width: 100%;
   max-width: 900px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
   gap: 24px;
+  flex-wrap: wrap;
 }
 
 .player-card {
@@ -478,12 +482,14 @@ body::before {
   padding: 18px 20px;
   background: rgba(255, 255, 255, 0.96);
   min-height: 120px;
+  min-width: 200px;
   box-shadow:
     0 16px 30px rgba(148, 163, 184, 0.25),
     0 0 0 1px rgba(226, 232, 240, 0.9);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  transition: all 0.3s ease;
 }
 
 .player-card-title {
@@ -492,64 +498,16 @@ body::before {
   color: var(--text-soft);
 }
 
-/* Cartes adversaires */
 .opponent-card {
   min-height: 140px;
-  padding: 14px 16px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow:
-    0 12px 24px rgba(248, 113, 113, 0.20),
-    0 0 0 1px rgba(254, 226, 226, 0.9);
-  border: 1px solid rgba(248, 113, 113, 0.7);
+  border: 2px solid #e2e8f0;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
 }
 
-.opponent-card .player-card-title {
-  font-size: 15px;
-  color: var(--text-soft);
-  margin-bottom: 10px;
-}
-
-.opponent-card .player-card-body {
-  border-radius: 18px;
-  border: 2px solid rgba(248, 113, 113, 0.35);
-  background: #ffffff;
-  min-height: 90px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--text-main);
-}
-
-/* Effets de révélation */
-.blurred {
-  filter: blur(6px);
-  user-select: none;
-}
-
-.revealed {
-  animation: revealGuess 0.25s ease-out;
-}
-
-@keyframes revealGuess {
-  from {
-    filter: blur(8px);
-    opacity: 0.4;
-  }
-  to {
-    filter: blur(0);
-    opacity: 1;
-  }
-}
-
-/* Carte du joueur principal (réponse) */
 .answer-card {
-  border-color: rgba(59, 130, 246, 0.9);
-  box-shadow:
-    0 16px 32px rgba(59, 130, 246, 0.2),
-    0 0 0 1px rgba(191, 219, 254, 0.9);
+  border: 2px solid #3b82f6;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+  transform: scale(1.05);
 }
 
 .answer-card .player-card-body {
@@ -564,51 +522,51 @@ body::before {
    ================================================ */
 
 .counter-btn {
-  min-width: 250px;
-  min-height: 200px;
-  border-radius: 20px;
-  border: 2px solid rgba(148, 163, 184, 0.9);
-  background: #ffffff;
-  font-size: 42px;
+  width: 120px;
+  height: 120px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  font-size: 48px;
   font-weight: 700;
-  color: var(--text-main);
+  border: none;
   cursor: pointer;
-  box-shadow:
-    0 20px 40px rgba(148, 163, 184, 0.25),
-    0 0 0 2px rgba(226, 232, 240, 0.9);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35);
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: 0.12s ease;
 }
 
 .counter-btn:hover {
-  transform: translateY(-3px);
-  background: #f0f6ff;
-  border-color: var(--accent);
+  transform: scale(1.05);
+  box-shadow: 0 12px 28px rgba(59, 130, 246, 0.5);
 }
 
 #btn-submit-answer {
-  padding: 7px 16px;
+  padding: 12px 32px;
   border-radius: 999px;
   border: none;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  color: #fff;
-  font-weight: 600;
+  background: linear-gradient(90deg, #10b981, #059669);
+  color: white;
+  font-weight: 700;
   cursor: pointer;
-  font-size: 14px;
-  transition: 0.15s ease;
+  font-size: 15px;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  transition: all 0.2s ease;
 }
 
 #btn-submit-answer:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 22px rgba(129, 140, 248, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.5);
 }
 
 #answer-feedback {
   font-size: 14px;
-  min-height: 18px;
+  min-height: 20px;
   color: var(--text-soft);
+  font-weight: 600;
+  text-align: center;
 }
 
 /* ================================================
@@ -630,8 +588,7 @@ body::before {
   }
 
   #home-center {
-    flex-direction: column;
-    gap: 16px;
+    top: 50%;
   }
 
   .btn-play {
@@ -643,6 +600,7 @@ body::before {
   #players-select {
     gap: 40px;
     font-size: 16px;
+    bottom: 60px;
   }
 
   .round-btn {
@@ -656,44 +614,39 @@ body::before {
     gap: 20px;
   }
 
+  #game-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+
   #game-title {
-    font-size: 18px;
+    font-size: 18px !important;
     letter-spacing: 2px;
+  }
+
+  #lobby-controls {
+    width: 100%;
+    justify-content: center;
   }
 
   #grid-wrapper {
     width: 95%;
-    max-height: 250px;
+    height: min(35vh, 280px);
     padding: 12px;
   }
 
   #game-panels {
-    grid-template-columns: 1fr;
+    flex-direction: column;
     gap: 16px;
   }
 
   .counter-btn {
-    min-width: 180px;
-    min-height: 150px;
-    font-size: 36px;
+    width: 100px;
+    height: 100px;
+    font-size: 40px;
   }
 }
 
-@media (max-width: 600px) {
-  #rounds-select {
-    padding: 0 16px;
-  }
-  
-  .rounds-buttons {
-    gap: 8px;
-  }
-  
-  .round-btn {
-    padding: 8px 18px;
-    font-size: 13px;
-    min-width: 85px;
-  }
-}
 /* ================================================
    RESPONSIVE - LAPTOPS (1366px - 1600px)
    ================================================ */
@@ -708,43 +661,21 @@ body::before {
     width: 240px;
     height: 130px;
     font-size: 22px;
-    letter-spacing: 3px;
   }
 
   #players-select {
     gap: 60px;
-    font-size: 16px;
-  }
-
-  #game-title {
-    font-size: 20px;
-    letter-spacing: 3px;
   }
 
   #grid-wrapper {
-    max-width: 550px;
-    max-height: 320px;
-  }
-
-  #game-panels {
-    max-width: 800px;
-    gap: 20px;
-  }
-
-  .counter-btn {
-    min-width: 200px;
-    min-height: 160px;
-    font-size: 38px;
+    width: 85%;
+    height: min(40vh, 360px);
   }
 }
 
 @media (max-width: 1400px) {
-  #screen-home {
-    padding: 20px 32px;
-  }
-
   #home-center {
-    top: 45%;
+    top: 50%;
   }
 
   .btn-play {
@@ -757,160 +688,20 @@ body::before {
     padding: 20px 32px;
     gap: 24px;
   }
-
-  #grid-wrapper {
-    max-width: 500px;
-    max-height: 280px;
-  }
-
-  .counter-btn {
-    min-width: 180px;
-    min-height: 140px;
-    font-size: 34px;
-  }
 }
 
-/* Spécial pour les écrans 1366x768 (laptops courants) */
-@media (max-width: 1366px) and (max-height: 768px) {
-  #logo {
-    font-size: 22px;
-    margin-bottom: 16px;
-  }
-
-  #pseudo-wrapper {
-    margin-top: 20px;
-  }
-
-  #home-center {
-    top: 42%;
-  }
-
-  .btn-play {
-    width: 200px;
-    height: 110px;
-    font-size: 18px;
-  }
-
-  #players-select {
-    bottom: 50px;
-    gap: 50px;
-  }
-
-  #rounds-select {
-    margin-top: 16px;
-  }
-
-  #game-main {
-    padding: 16px 24px;
-    gap: 20px;
-  }
-
-  #grid-wrapper {
-    max-width: 450px;
-    max-height: 240px;
-  }
-
-  #game-panels {
-    max-width: 700px;
-    gap: 16px;
-  }
-
-  .player-card {
-    min-height: 100px;
-    padding: 14px 16px;
-  }
-
-  .counter-btn {
-    min-width: 150px;
-    min-height: 120px;
-    font-size: 30px;
-  }
-  /* ================================================
-   RESPONSIVE - macOS (MacBook, iMac)
+/* ================================================
+   RESPONSIVE - MACBOOK PRO 15" (1680 x 1050)
    ================================================ */
 
-/* MacBook Air 13" (1440x900) */
-@media (max-width: 1440px) and (max-height: 900px) {
-  #logo {
-    font-size: 22px;
-    letter-spacing: 5px;
-    margin-bottom: 16px;
-  }
-
-  #pseudo-wrapper {
-    margin-top: 20px;
-  }
-
-  #player-name {
-    width: 220px;
-    padding: 10px 16px;
-    font-size: 15px;
-  }
-
-  #home-center {
-    margin-top: 24px;
-    margin-bottom: 100px;
-  }
-
-  .btn-play {
-    width: 220px;
-    height: 120px;
-    font-size: 20px;
-    letter-spacing: 3px;
-  }
-
-  #players-select {
-    margin-bottom: 24px;
-    gap: 60px;
-    font-size: 16px;
-  }
-
-  #rounds-select {
-    margin-top: 16px;
-  }
-
-  .round-btn {
-    padding: 8px 20px;
-    font-size: 13px;
-    min-width: 90px;
-  }
-}
-
-/* MacBook Pro 13" et 14" (Retina) */
-@media (min-width: 1280px) and (max-width: 1680px) and (min-height: 800px) and (max-height: 1050px) {
-  #screen-home {
-    padding: 28px 40px;
-  }
-
-  #logo {
-    font-size: 24px;
-    letter-spacing: 6px;
-  }
-
-  #home-center {
-    margin-top: 32px;
-    margin-bottom: 120px;
-  }
-
-  .btn-play {
-    width: 240px;
-    height: 130px;
-    font-size: 22px;
-  }
-
-  #players-select {
-    gap: 70px;
-  }
-}
-
-/* iMac 24" et MacBook Pro 16" */
-@media (min-width: 1680px) and (max-width: 1920px) {
-  #screen-home {
-    padding: 32px 48px;
-  }
-
+@media (min-width: 1600px) and (max-width: 1680px) and (min-height: 1000px) and (max-height: 1050px) {
   #logo {
     font-size: 26px;
+    letter-spacing: 7px;
+  }
+
+  #home-center {
+    top: 52%;
   }
 
   .btn-play {
@@ -918,46 +709,28 @@ body::before {
     height: 140px;
     font-size: 24px;
   }
-}
 
-/* macOS - Page de jeu */
-@media (max-width: 1440px) and (max-height: 900px) {
-  #game-main {
-    padding: 16px 28px;
-    gap: 20px;
+  #players-select {
+    gap: 80px;
+  }
+
+  .round-btn {
+    padding: 10px 26px;
+    font-size: 14px;
+    min-width: 105px;
   }
 
   #game-title {
-    font-size: 18px;
-    letter-spacing: 3px;
+    font-size: 22px !important;
   }
 
   #grid-wrapper {
-    width: min(80%, 550px);
-    height: min(35vh, 300px);
-    padding: 14px;
+    width: 85%;
+    height: min(40vh, 380px);
   }
 
   #game-panels {
-    max-width: 750px;
-    gap: 18px;
+    max-width: 850px;
+    gap: 22px;
   }
-
-  .player-card {
-    min-height: 110px;
-    padding: 16px 18px;
-  }
-
-  .counter-btn {
-    min-width: 170px;
-    min-height: 130px;
-    font-size: 32px;
-  }
-}
-
-/* Safari spécifique (macOS) */
-@supports (-webkit-appearance: none) {
-  /* Corrige les problèmes de rendu Safari */
-  body {
-    -webki
 }

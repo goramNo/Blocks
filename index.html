@@ -154,52 +154,52 @@
     </div>
 
     <div id="game-main">
-      <!-- ✨ En-tête avec titre et bouton côte à côte -->
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; max-width: 1200px; margin-left: auto; margin-right: auto; padding: 0 20px; gap: 60px;">
-        <h2 id="game-title" style="margin: 0; flex-shrink: 0;">BLOCKS BY SKCARD</h2>
-        
-        <!-- ✨ Bouton Lancer + Banner Attente (à droite du titre) -->
-        <div id="lobby-controls" style="text-align: center; flex-shrink: 0;">
-          <button id="btn-start-game" class="hidden" style="
-            padding: 14px 40px;
-            font-size: 18px;
-            font-weight: 700;
-            color: white;
-            background: linear-gradient(90deg, #2563eb, #7c3aed);
-            border: none;
-            border-radius: 999px;
-            cursor: pointer;
-            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
-            transition: all 0.2s ease;
-            white-space: nowrap;
-          ">
-            🚀 Lancer la partie
-          </button>
-          
-          <div id="waiting-banner" class="hidden" style="
-            padding: 12px 24px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 12px;
-            color: #64748b;
-            font-weight: 600;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            white-space: nowrap;
-          ">
-            ⏳ En attente...
-          </div>
-        </div>
-      </div>
+  <!-- ✅ En-tête avec titre et bouton côte à côte -->
+  <div id="game-header">
+    <h2 id="game-title">BLOCKS BY DRACKS</h2>
+    
+    <!-- ✅ Bouton Lancer + Banner Attente -->
+    <div id="lobby-controls">
+      <button id="btn-start-game" class="hidden" style="
+        padding: 14px 40px;
+        font-size: 18px;
+        font-weight: 700;
+        color: white;
+        background: linear-gradient(90deg, #2563eb, #7c3aed);
+        border: none;
+        border-radius: 999px;
+        cursor: pointer;
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+        transition: all 0.2s ease;
+        white-space: nowrap;
+      ">
+        🚀 Lancer la partie
+      </button>
       
-      <!-- zone centrale : la grille / plateau -->
-      <div id="grid-wrapper" style="max-height: 350px; aspect-ratio: 16/9; position: relative; background: white; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); overflow: hidden; margin: 0 auto 32px auto; max-width: 1200px;">
-        <canvas id="board"></canvas>
-      </div>
-
-      <!-- cartes joueurs + compteur -->
-      <div id="game-panels">
-        <!-- Dynamiquement généré par JavaScript -->
+      <div id="waiting-banner" class="hidden" style="
+        padding: 12px 24px;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 12px;
+        color: #64748b;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        white-space: nowrap;
+      ">
+        ⏳ En attente...
       </div>
     </div>
+  </div>
+  
+  <!-- zone centrale : la grille / plateau -->
+  <div id="grid-wrapper">
+    <canvas id="board"></canvas>
+  </div>
+
+  <!-- cartes joueurs + compteur -->
+  <div id="game-panels">
+    <!-- Dynamiquement généré par JavaScript -->
+  </div>
+</div>
   </div>
 
      <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>

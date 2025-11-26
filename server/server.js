@@ -15,10 +15,10 @@ app.use(cors({
   credentials: true
 }));
 
-// Dans server/server.js
+// Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 1000, // ✅ Change de 100 à 1000
+  max: 1000,
   message: 'Trop de requêtes, réessayez plus tard'
 });
 app.use(limiter);
@@ -174,11 +174,11 @@ io.on("connection", (socket) => {
       
       console.log(`✅ Round 1 démarré - Solution: ${room.solution}`);
       
-      // ⚠️ NE JAMAIS envoyer activeBlocks au client !
+      // ✅ ENVOIE activeBlocks au client
       io.to(roomId).emit("newRoundStart", {
         round: room.round,
-        players: room.players
-        // activeBlocks retiré pour éviter la triche
+        players: room.players,
+        activeBlocks: room.activeBlocks // ✅ CORRIGÉ
       });
       
       broadcastRoom(roomId);
@@ -253,10 +253,11 @@ io.on("connection", (socket) => {
       room.activeBlocks = generateRandomGrid();
       room.solution = room.activeBlocks.length;
       
-      // ⚠️ NE JAMAIS envoyer activeBlocks !
+      // ✅ ENVOIE activeBlocks au client
       io.to(roomId).emit("newRoundStart", {
         round: room.round,
-        players: room.players
+        players: room.players,
+        activeBlocks: room.activeBlocks // ✅ CORRIGÉ
       });
       
       broadcastRoom(roomId);
