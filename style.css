@@ -825,4 +825,139 @@ body::before {
     min-height: 120px;
     font-size: 30px;
   }
+  /* ================================================
+   RESPONSIVE - macOS (MacBook, iMac)
+   ================================================ */
+
+/* MacBook Air 13" (1440x900) */
+@media (max-width: 1440px) and (max-height: 900px) {
+  #logo {
+    font-size: 22px;
+    letter-spacing: 5px;
+    margin-bottom: 16px;
+  }
+
+  #pseudo-wrapper {
+    margin-top: 20px;
+  }
+
+  #player-name {
+    width: 220px;
+    padding: 10px 16px;
+    font-size: 15px;
+  }
+
+  #home-center {
+    margin-top: 24px;
+    margin-bottom: 100px;
+  }
+
+  .btn-play {
+    width: 220px;
+    height: 120px;
+    font-size: 20px;
+    letter-spacing: 3px;
+  }
+
+  #players-select {
+    margin-bottom: 24px;
+    gap: 60px;
+    font-size: 16px;
+  }
+
+  #rounds-select {
+    margin-top: 16px;
+  }
+
+  .round-btn {
+    padding: 8px 20px;
+    font-size: 13px;
+    min-width: 90px;
+  }
+}
+
+/* MacBook Pro 13" et 14" (Retina) */
+@media (min-width: 1280px) and (max-width: 1680px) and (min-height: 800px) and (max-height: 1050px) {
+  #screen-home {
+    padding: 28px 40px;
+  }
+
+  #logo {
+    font-size: 24px;
+    letter-spacing: 6px;
+  }
+
+  #home-center {
+    margin-top: 32px;
+    margin-bottom: 120px;
+  }
+
+  .btn-play {
+    width: 240px;
+    height: 130px;
+    font-size: 22px;
+  }
+
+  #players-select {
+    gap: 70px;
+  }
+}
+
+/* iMac 24" et MacBook Pro 16" */
+@media (min-width: 1680px) and (max-width: 1920px) {
+  #screen-home {
+    padding: 32px 48px;
+  }
+
+  #logo {
+    font-size: 26px;
+  }
+
+  .btn-play {
+    width: 260px;
+    height: 140px;
+    font-size: 24px;
+  }
+}
+
+/* macOS - Page de jeu */
+@media (max-width: 1440px) and (max-height: 900px) {
+  #game-main {
+    padding: 16px 28px;
+    gap: 20px;
+  }
+
+  #game-title {
+    font-size: 18px;
+    letter-spacing: 3px;
+  }
+
+  #grid-wrapper {
+    width: min(80%, 550px);
+    height: min(35vh, 300px);
+    padding: 14px;
+  }
+
+  #game-panels {
+    max-width: 750px;
+    gap: 18px;
+  }
+
+  .player-card {
+    min-height: 110px;
+    padding: 16px 18px;
+  }
+
+  .counter-btn {
+    min-width: 170px;
+    min-height: 130px;
+    font-size: 32px;
+  }
+}
+
+/* Safari spécifique (macOS) */
+@supports (-webkit-appearance: none) {
+  /* Corrige les problèmes de rendu Safari */
+  body {
+    -webki
 }
