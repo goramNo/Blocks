@@ -412,15 +412,15 @@ body::before {
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.9);
   padding: 18px;
-  width: min(90%, 700px); /* ✅ Limite la largeur */
-  height: min(40vh, 400px); /* ✅ Limite la hauteur */
+  max-width: 620px;
+  width: 80%;
+  max-height: 360px;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow:
     0 22px 40px rgba(15, 23, 42, 0.15),
     0 0 0 1px rgba(226, 232, 240, 0.9);
-  margin: 0 auto; /* ✅ Centre */
 }
 
 #board {
